@@ -1,0 +1,6 @@
+in/*
+dist/rpm/repodata
+dist/rpm/*.rpm
+dist/apt/pool
+dist/apt/dists
+dist/apt/db

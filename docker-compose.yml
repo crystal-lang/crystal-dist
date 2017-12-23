@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  centos:
+    build: docker/centos
+    volumes:
+      - $HOME/.gnupg:/root/.gnupg
+      - ./dist:/dist
+      - ./in:/in
+
+  debian:
+    build: docker/debian
+    volumes:
+      - $HOME/.gnupg:/root/.gnupg
+      - ./dist:/dist
+      - ./in:/in
