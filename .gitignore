@@ -1,4 +1,5 @@
 in/*
+dist/api
 dist/rpm/repodata
 dist/rpm/*.rpm
 dist/apt/pool
