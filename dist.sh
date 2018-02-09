@@ -50,10 +50,16 @@ case $1 in
   #
   # $ ./dist.sh build-docker {version}
   build-docker)
-    docker build --no-cache --target build -t crystallang/crystal:$2-build -f docker/crystal/Dockerfile .
-    docker build --target runtime -t crystallang/crystal:$2 -f docker/crystal/Dockerfile .
+    BUILD_ARGS_64='-f docker/crystal/Dockerfile --build-arg base_docker_image=ubuntu:xenial'
+    docker build --no-cache --target build -t crystallang/crystal:$2-build $BUILD_ARGS_64 .
+    docker build --target runtime -t crystallang/crystal:$2 $BUILD_ARGS_64 .
+
+    BUILD_ARGS_32='-f docker/crystal/Dockerfile --build-arg base_docker_image=i386/ubuntu:xenial --build-arg library_path=/opt/crystal/embedded/lib/'
+    docker build --no-cache --target build -t crystallang/crystal:$2-i386-build $BUILD_ARGS_32 .
+    docker build --target runtime -t crystallang/crystal:$2-i386 $BUILD_ARGS_32 .
 
     assert_installed_crystal_in_docker "$2-build" $2
+    assert_installed_crystal_in_docker "$2-i386-build" $2
     ;;
 
   # Push local built crystallang/crystal:{version} and crystallang/crystal:{version}-build
@@ -62,8 +68,11 @@ case $1 in
   # $ ./dist.sh push-docker {version}
   push-docker)
     assert_installed_crystal_in_docker "$2-build" $2
+    assert_installed_crystal_in_docker "$2-i386-build" $2
 
     docker push crystallang/crystal:$2
     docker push crystallang/crystal:$2-build
+    docker push crystallang/crystal:$2-i386
+    docker push crystallang/crystal:$2-i386-build
     ;;
 esac
