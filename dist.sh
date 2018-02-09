@@ -9,6 +9,19 @@ function centos() {
   docker-compose exec centos /bin/sh -c "$@"
 }
 
+function assert_installed_crystal_in_docker() {
+  INSTALLED_VERSION=$(docker run --rm crystallang/crystal:$1 crystal --version | head -n 1)
+  if [[ $INSTALLED_VERSION =~ "Crystal $2 " ]];
+    then
+      echo " ✓ Docker images crystallang/crystal:$1 matches Crystal $2";
+    else
+      echo "ERROR: installed crystal version does not match docker tag"
+      echo "  Expected: Crystal $2"
+      echo "    Actual: $INSTALLED_VERSION"
+      exit 1
+  fi
+}
+
 case $1 in
   pull)
     s3cmd -v sync s3://dist.crystal-lang.org/rpm/ dist/rpm/
@@ -30,5 +43,27 @@ case $1 in
     centos "cp /$2 /dist/rpm"
     centos "createrepo /dist/rpm"
     centos "gpg --detach-sign --armor -u 7CC06B54 /dist/rpm/repodata/repomd.xml"
+    ;;
+
+  # Build crystallang/crystal:{version} and crystallang/crystal:{version}-build
+  # docker images. It will install the published binaries at dist.crystal-lang.org/apt
+  #
+  # $ ./dist.sh build-docker {version}
+  build-docker)
+    docker build --no-cache --target build -t crystallang/crystal:$2-build -f docker/crystal/Dockerfile .
+    docker build --target runtime -t crystallang/crystal:$2 -f docker/crystal/Dockerfile .
+
+    assert_installed_crystal_in_docker "$2-build" $2
+    ;;
+
+  # Push local built crystallang/crystal:{version} and crystallang/crystal:{version}-build
+  # docker images to hub.docker.com.
+  #
+  # $ ./dist.sh push-docker {version}
+  push-docker)
+    assert_installed_crystal_in_docker "$2-build" $2
+
+    docker push crystallang/crystal:$2
+    docker push crystallang/crystal:$2-build
     ;;
 esac
