@@ -9,6 +9,19 @@ function centos() {
   docker-compose exec centos /bin/sh -c "$@"
 }
 
+function assert_installed_crystal_in_docker() {
+  INSTALLED_VERSION=$(docker run --rm crystallang/crystal:$1 crystal --version | head -n 1)
+  if [[ $INSTALLED_VERSION =~ "Crystal $2 " ]];
+    then
+      echo " ✓ Docker images crystallang/crystal:$1 matches Crystal $2";
+    else
+      echo "ERROR: installed crystal version does not match docker tag"
+      echo "  Expected: Crystal $2"
+      echo "    Actual: $INSTALLED_VERSION"
+      exit 1
+  fi
+}
+
 function aws_cli() {
   docker run --rm \
     -e "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" \
@@ -38,6 +51,37 @@ case $1 in
     centos "cp /$2 /dist/rpm"
     centos "createrepo /dist/rpm"
     centos "gpg --detach-sign --armor -u 7CC06B54 /dist/rpm/repodata/repomd.xml"
+    ;;
+
+  # Build crystallang/crystal:{version} and crystallang/crystal:{version}-build
+  # docker images. It will install the published binaries at dist.crystal-lang.org/apt
+  #
+  # $ ./dist.sh build-docker {version}
+  build-docker)
+    BUILD_ARGS_64='-f docker/crystal/Dockerfile --build-arg base_docker_image=ubuntu:xenial'
+    docker build --no-cache --target build -t crystallang/crystal:$2-build $BUILD_ARGS_64 .
+    docker build --target runtime -t crystallang/crystal:$2 $BUILD_ARGS_64 .
+
+    BUILD_ARGS_32='-f docker/crystal/Dockerfile --build-arg base_docker_image=i386/ubuntu:xenial --build-arg library_path=/opt/crystal/embedded/lib/'
+    docker build --no-cache --target build -t crystallang/crystal:$2-i386-build $BUILD_ARGS_32 .
+    docker build --target runtime -t crystallang/crystal:$2-i386 $BUILD_ARGS_32 .
+
+    assert_installed_crystal_in_docker "$2-build" $2
+    assert_installed_crystal_in_docker "$2-i386-build" $2
+    ;;
+
+  # Push local built crystallang/crystal:{version} and crystallang/crystal:{version}-build
+  # docker images to hub.docker.com.
+  #
+  # $ ./dist.sh push-docker {version}
+  push-docker)
+    assert_installed_crystal_in_docker "$2-build" $2
+    assert_installed_crystal_in_docker "$2-i386-build" $2
+
+    docker push crystallang/crystal:$2
+    docker push crystallang/crystal:$2-build
+    docker push crystallang/crystal:$2-i386
+    docker push crystallang/crystal:$2-i386-build
     ;;
 
   # Upload docs in .tar.gz file to https://crystal-lang.org/api/{version}
