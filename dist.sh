@@ -37,8 +37,8 @@ case $1 in
     ;;
 
   push)
-    s3cmd -v sync dist/rpm/ s3://dist.crystal-lang.org/rpm/
-    s3cmd -v sync dist/apt/ s3://dist.crystal-lang.org/apt/
+    s3cmd -v sync -P dist/rpm/ s3://dist.crystal-lang.org/rpm/
+    s3cmd -v sync -P dist/apt/ s3://dist.crystal-lang.org/apt/
     ;;
 
   add-deb)
