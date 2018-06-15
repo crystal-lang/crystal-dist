@@ -10,7 +10,7 @@ RUN \
   apt-get install -y tzdata crystal gcc pkg-config libssl-dev libxml2-dev libyaml-dev libgmp-dev git make && \
   apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-CMD ["/bin/bash"]
+CMD ["/bin/sh"]
 
 FROM runtime as build
 
@@ -22,4 +22,4 @@ RUN \
 ARG library_path=/usr/lib/crystal/lib/
 ENV LIBRARY_PATH=${library_path}
 
-CMD ["/bin/bash"]
+CMD ["/bin/sh"]
