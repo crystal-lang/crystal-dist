@@ -4,13 +4,17 @@ services:
   centos:
     build: docker/centos
     volumes:
-      - $HOME/.gnupg:/root/.gnupg
+      - gnupg_centos:/root/.gnupg
       - ./dist:/dist
       - ./in:/in
 
   debian:
     build: docker/debian
     volumes:
-      - $HOME/.gnupg:/root/.gnupg
+      - gnupg_debian:/root/.gnupg
       - ./dist:/dist
       - ./in:/in
+
+volumes:
+  gnupg_centos:
+  gnupg_debian:
