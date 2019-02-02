@@ -37,8 +37,8 @@ case $1 in
     ;;
 
   push)
-    s3cmd -v sync --no-delete-removed -P dist/rpm/ s3://dist.crystal-lang.org/rpm/
-    s3cmd -v sync --no-delete-removed -P dist/apt/ s3://dist.crystal-lang.org/apt/
+    s3cmd -v sync --no-delete-removed --exclude=.DS_Store -P dist/rpm/ s3://dist.crystal-lang.org/rpm/
+    s3cmd -v sync --no-delete-removed --exclude=.DS_Store -P dist/apt/ s3://dist.crystal-lang.org/apt/
     ;;
 
   add-deb)
