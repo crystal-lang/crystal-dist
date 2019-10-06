@@ -47,7 +47,9 @@ case $1 in
     ;;
 
   add-rpm)
+    centos "rpm --checksig /$2"
     centos "rpm --resign /$2"
+    centos "rpm --checksig /$2"
     centos "cp /$2 /dist/rpm"
     centos "createrepo /dist/rpm"
     centos "gpg --detach-sign --armor -u 7CC06B54 /dist/rpm/repodata/repomd.xml"
