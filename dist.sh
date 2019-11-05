@@ -60,11 +60,11 @@ case $1 in
   #
   # $ ./dist.sh build-docker {version}
   build-docker)
-    BUILD_ARGS_64='-f docker/crystal/Dockerfile --build-arg base_docker_image=ubuntu:xenial'
+    BUILD_ARGS_64='-f docker/crystal/Dockerfile --build-arg base_docker_image=ubuntu:bionic'
     docker build --no-cache --pull --target build -t crystallang/crystal:$2-build $BUILD_ARGS_64 .
     docker build --target runtime -t crystallang/crystal:$2 $BUILD_ARGS_64 .
 
-    BUILD_ARGS_32='-f docker/crystal/Dockerfile --build-arg base_docker_image=i386/ubuntu:xenial'
+    BUILD_ARGS_32='-f docker/crystal/Dockerfile --build-arg base_docker_image=i386/ubuntu:bionic'
     docker build --no-cache --pull --target build -t crystallang/crystal:$2-i386-build $BUILD_ARGS_32 .
     docker build --target runtime -t crystallang/crystal:$2-i386 $BUILD_ARGS_32 .
 
