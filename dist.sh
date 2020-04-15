@@ -95,6 +95,23 @@ case $1 in
     tar xfz $3 -C dist/api/$2 --strip-component=2
     s3cmd -v sync dist/api/$2/ s3://crystal-api/api/$2/
     ;;
+    
+  # Update config file listing all Crystal versions available on API docs.
+  # File is available at https://crystal-lang.org/api/versions.js
+  #
+  # $ ./dist.sh update-docs-versions {version} {next-version}
+  update-docs-versions)
+    s3cmd -v sync s3://crystal-api/api/versions.js dist/api/versions.js
+    
+    # Update master name to next development version
+    sed -i dist/api/versions.js -e "2 s/name: \"$2-dev\"/name: \"$3-dev\"/"
+    # Remove latest label from previously labelled version
+    sed -i dist/api/versions.js -e '3 s/, latest: true//'
+    # Add new version at top but after master
+    sed -i dist/api/versions.js -e "2 a\  {name: "$2", url: \"/api/$2/\", latest: true}"
+    
+    s3cmd -v sync dist/api/versions.js s3://crystal-api/api/versions.js
+    ;;
 
   # Make {version} the default docs version so the following redirects occurs
   # /api/latest/Array.html -> /api/{version}/Array.html
