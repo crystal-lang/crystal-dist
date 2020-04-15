@@ -108,7 +108,7 @@ case $1 in
     # Remove latest label from previously labelled version
     sed -i dist/api/versions.js -e '3 s/, latest: true//'
     # Add new version at top but after master
-    sed -i dist/api/versions.js -e "2 a\  {name: "$2", url: \"/api/$2/\", latest: true}"
+    sed -i dist/api/versions.js -e "2 a\  {name: \"$2\", url: \"/api/$2/\", latest: true}"
     
     s3cmd -v sync dist/api/versions.js s3://crystal-api/api/versions.js
     ;;
