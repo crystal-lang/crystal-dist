@@ -97,20 +97,13 @@ case $1 in
     ;;
     
   # Update config file listing all Crystal versions available on API docs.
-  # File is available at https://crystal-lang.org/api/versions.js
+  # File is available at https://crystal-lang.org/api/versions.json
   #
-  # $ ./dist.sh update-docs-versions {version} {next-version}
+  # $ ./dist.sh update-docs-versions {path-to-crystal-repo-working-dir}
   update-docs-versions)
-    s3cmd -v sync s3://crystal-api/api/versions.js dist/api/versions.js
-    
-    # Update master name to next development version
-    sed -i dist/api/versions.js -e "2 s/name: \"$2-dev\"/name: \"$3-dev\"/"
-    # Remove latest label from previously labelled version
-    sed -i dist/api/versions.js -e '3 s/, latest: true//'
-    # Add new version at top but after master
-    sed -i dist/api/versions.js -e "2 a\  {name: \"$2\", url: \"/api/$2/\", latest: true}"
-    
-    s3cmd -v sync dist/api/versions.js s3://crystal-api/api/versions.js
+    mkdir -p dist/api
+    sh -c "cd $1; scripts/docs-versions.js" > dist/api/versions.json
+    s3cmd -v sync dist/api/versions.json s3://crystal-api/api/versions.json
     ;;
 
   # Make {version} the default docs version so the following redirects occurs
