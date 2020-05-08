@@ -102,7 +102,7 @@ case $1 in
   # $ ./dist.sh update-docs-versions {path-to-crystal-repo-working-dir}
   update-docs-versions)
     mkdir -p dist/api
-    sh -c "cd $1; scripts/docs-versions.cr" > dist/api/versions.json
+    sh -c "cd $1; scripts/docs-versions.sh" > dist/api/versions.json
     s3cmd -v sync dist/api/versions.json s3://crystal-api/api/versions.json
     ;;
 
