@@ -22,6 +22,4 @@ RUN \
 
 RUN ln -sf /usr/bin/ld.lld-8 /usr/bin/ld.lld
 
-ENV LIBRARY_PATH=/usr/lib/crystal/lib/
-
 CMD ["/bin/sh"]
