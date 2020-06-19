@@ -95,14 +95,14 @@ case $1 in
     tar xfz $3 -C dist/api/$2 --strip-component=2
     s3cmd -v sync dist/api/$2/ s3://crystal-api/api/$2/
     ;;
-    
+
   # Update config file listing all Crystal versions available on API docs.
   # File is available at https://crystal-lang.org/api/versions.json
   #
   # $ ./dist.sh update-docs-versions {path-to-crystal-repo-working-dir}
   update-docs-versions)
     mkdir -p dist/api
-    sh -c "cd $1; scripts/docs-versions.sh" > dist/api/versions.json
+    sh -c "cd $2; scripts/docs-versions.sh" > dist/api/versions.json
     s3cmd -v sync dist/api/versions.json s3://crystal-api/api/versions.json
     ;;
 
