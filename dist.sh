@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 function debian() {
@@ -56,15 +56,15 @@ case $1 in
     ;;
 
   # Build crystallang/crystal:{version} and crystallang/crystal:{version}-build
-  # docker images. It will install the published binaries at dist.crystal-lang.org/apt
+  # docker images. They contain the published binary packages from OBS.
   #
   # $ ./dist.sh build-docker {version}
   build-docker)
-    BUILD_ARGS_64='-f docker/crystal/Dockerfile --build-arg base_docker_image=ubuntu:bionic'
+    BUILD_ARGS_64='-f docker/crystal/Dockerfile --build-arg base_docker_image=ubuntu:20.04 --build-arg obs_repository=xUbuntu_20.04'
     docker build --no-cache --pull --target build -t crystallang/crystal:$2-build $BUILD_ARGS_64 .
     docker build --target runtime -t crystallang/crystal:$2 $BUILD_ARGS_64 .
 
-    BUILD_ARGS_32='-f docker/crystal/Dockerfile --build-arg base_docker_image=i386/ubuntu:bionic'
+    BUILD_ARGS_32='-f docker/crystal/Dockerfile --build-arg base_docker_image=i386/ubuntu:bionic --build-arg obs_repository=xUbuntu_18.04'
     docker build --no-cache --pull --target build -t crystallang/crystal:$2-i386-build $BUILD_ARGS_32 .
     docker build --target runtime -t crystallang/crystal:$2-i386 $BUILD_ARGS_32 .
 
