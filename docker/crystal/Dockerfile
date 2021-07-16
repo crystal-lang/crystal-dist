@@ -1,11 +1,11 @@
 ARG base_docker_image
-ARG obs_repository
 FROM ${base_docker_image} as runtime
 
+ARG obs_repository
 RUN \
   apt-get update && \
   apt-get install -y wget gnupg2 && \
-  wget -qO- https://download.opensuse.org/repositories/devel:languages:crystal/xUbuntu_20.04/Release.key | gpg --dearmor > /etc/apt/trusted.gpg.d/devel_languages_crystal.gpg && \
+  wget -qO- https://download.opensuse.org/repositories/devel:languages:crystal/${obs_repository}/Release.key | gpg --dearmor > /etc/apt/trusted.gpg.d/devel_languages_crystal.gpg && \
   echo "deb http://download.opensuse.org/repositories/devel:languages:crystal/${obs_repository}/ /" > /etc/apt/sources.list.d/devel:languages:crystal.list && \
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive \
