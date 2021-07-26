@@ -84,6 +84,11 @@ case $1 in
     docker push crystallang/crystal:$2-build
     docker push crystallang/crystal:$2-i386
     docker push crystallang/crystal:$2-i386-build
+
+    readme=$(mktemp)
+    curl -sL https://github.com/crystal-lang/crystal/raw/$2/README.md > $readme
+    docker pushrm crystallang/crystal -f $readme
+    rm $readme
     ;;
 
   # Upload docs in .tar.gz file to https://crystal-lang.org/api/{version}
